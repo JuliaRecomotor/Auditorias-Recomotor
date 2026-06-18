@@ -181,6 +181,11 @@ body{
 }
 .obs-ta{resize:none;line-height:1.4}
 .obs-ta:focus,.date-inp:focus,.text-inp:focus{outline:none;border-color:var(--g)}
+.exp-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;margin-top:6px}
+.exp-red{background:#fdecea;color:#c62828}
+.exp-orange{background:#fff3e0;color:#e65100}
+.exp-green{background:#e8f5e9;color:#2e7d32}
+.card-exp-warn{font-size:11px;font-weight:700;color:#c62828;margin-left:4px;vertical-align:middle}
 
 /* &#x2500;&#x2500; SUMMARY SCORE &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; */
 .score-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0 14px}
@@ -527,12 +532,27 @@ function renderHome() {
     const isSeg=au.type==='seguimiento';
     const sc=isSeg&&au.score!=null
       ?`<div class="ai-sc" style="color:${scColor(au.score,au.maxScore)}">${au.score}<span style="font-size:10px;font-weight:500">/${au.maxScore}</span></div>`:'';
+    // Check for expiring documents in Rev. Documental audits
+    let expWarn='';
+    if(!isSeg){
+      const today=new Date(); today.setHours(0,0,0,0);
+      const expItems=REV.flatMap(s=>s.items).filter(it=>{
+        const d=au.data?.[it.id]?.date;
+        if(!d) return false;
+        const days=Math.ceil((new Date(d)-today)/86400000);
+        return days<=90;
+      });
+      const expired=expItems.filter(it=>Math.ceil((new Date(au.data[it.id].date)-today)/86400000)<0).length;
+      const soon=expItems.filter(it=>{const dd=Math.ceil((new Date(au.data[it.id].date)-today)/86400000);return dd>=0&&dd<=30;}).length;
+      if(expired>0) expWarn=`<span class="card-exp-warn">&#x26A0; ${expired} caducado${expired>1?'s':''}</span>`;
+      else if(soon>0) expWarn=`<span class="card-exp-warn" style="color:#e65100">&#x23F0; ${soon} caduca pronto</span>`;
+    }
     return`<div class="card" style="cursor:pointer" onclick="viewDetail('${au.id}')">
       <div class="ai">
         <div class="ai-ico ${isSeg?'seg':'rev'}">${isSeg?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'}</div>
         <div class="ai-inf">
           <div class="nm">${au.center}</div>
-          <div class="mt">${fDate(au.date)} \u00B7 <span class="tag ${isSeg?'tag-seg':'tag-rev'}">${isSeg?'Seguimiento':'Rev. Documental'}</span></div>
+          <div class="mt">${fDate(au.date)} \u00B7 <span class="tag ${isSeg?'tag-seg':'tag-rev'}">${isSeg?'Seguimiento':'Rev. Documental'}</span>${expWarn}</div>
         </div>
         ${sc}<div class="chev">\u203A</div>
       </div></div>`;
@@ -673,6 +693,7 @@ function buildRevForm(){
             <button class="vaw-btn" id="vb-${it.id}-x" onclick="setVAW('${it.id}','x')">\u2717 No disponible</button>
           </div>
           <input type="date" class="date-inp" id="dt-${it.id}" placeholder="Fecha caducidad" onchange="saveDate('${it.id}')">
+          <div id="exp-${it.id}"></div>
           <textarea class="obs-ta" id="obs-${it.id}" rows="2" placeholder="Observaci\u00F3n\u2026" oninput="saveObs('${it.id}')"></textarea>
         </div>`;
       });
@@ -688,11 +709,13 @@ function buildRevForm(){
             <button class="vaw-btn" id="vb-${it.id}-x" onclick="setVAW('${it.id}','x')">\u2717 Sin contrato</button>
           </div>
           <input type="date" class="date-inp" id="dt-${it.id}" placeholder="Vencimiento" onchange="saveDate('${it.id}')">
+          <div id="exp-${it.id}"></div>
         </div>`;
       });
     }
   });
   document.getElementById('rev-form').innerHTML=h;
+  updateAllExpiryTags();
 }
 
 function setVAW(id,v){
@@ -709,7 +732,27 @@ function saveDate(id){
   if(!S.current.data[id]) S.current.data[id]={};
   const el=document.getElementById('dt-'+id);
   if(el) S.current.data[id].date=el.value;
+  updateExpiryTag(id);
   autosave();
+}
+function updateExpiryTag(id){
+  const dateStr=S.current?.data?.[id]?.date;
+  const el=document.getElementById('exp-'+id);
+  if(!el) return;
+  if(!dateStr){el.innerHTML='';return;}
+  const days=Math.ceil((new Date(dateStr)-new Date())/86400000);
+  if(days<0){
+    el.innerHTML=`<span class="exp-tag exp-red">&#x26A0;&#xFE0F; Caducado hace ${Math.abs(days)} d&#x00EDas</span>`;
+  } else if(days<=30){
+    el.innerHTML=`<span class="exp-tag exp-red">&#x26A0;&#xFE0F; Caduca en ${days} d&#x00EDas</span>`;
+  } else if(days<=90){
+    el.innerHTML=`<span class="exp-tag exp-orange">&#x23F0; Caduca en ${days} d&#x00EDas</span>`;
+  } else {
+    el.innerHTML=`<span class="exp-tag exp-green">&#x2713; Vigente &mdash; ${days} d&#x00EDas</span>`;
+  }
+}
+function updateAllExpiryTags(){
+  REV.flatMap(s=>s.items).forEach(it=>updateExpiryTag(it.id));
 }
 function saveCtr(id){
   if(!S.current.data[id]) S.current.data[id]={};
@@ -848,8 +891,15 @@ function viewDetail(id){
         const d=a.data[it.id]||{};const vaw=d.vaw;
         const vc=vaw==='v'?'badge-B':vaw==='a'?'badge-R':vaw==='x'?'badge-M':'badge-nd';
         const vl=vaw==='v'?'\u2713 Vigente':vaw==='a'?'\u26A0 Renovar':vaw==='x'?'\u2717 No disp.':'\u2014';
+        let expHtml='';
+        if(d.date){
+          const days=Math.ceil((new Date(d.date)-new Date())/86400000);
+          if(days<0) expHtml=` <span class="exp-tag exp-red" style="font-size:10px;padding:2px 6px">&#x26A0; Caducado hace ${Math.abs(days)} d&#x00EDas</span>`;
+          else if(days<=30) expHtml=` <span class="exp-tag exp-red" style="font-size:10px;padding:2px 6px">&#x26A0; Caduca en ${days} d&#x00EDas</span>`;
+          else if(days<=90) expHtml=` <span class="exp-tag exp-orange" style="font-size:10px;padding:2px 6px">&#x23F0; Caduca en ${days} d&#x00EDas</span>`;
+        }
         const sub=[d.nombre,d.tipo,d.date?'Vto: '+fDate(d.date):''].filter(Boolean).join(' \u00B7 ');
-        h+=`<div class="detail-item"><div class="detail-lbl">${it.label}${sub?`<div class="detail-obs">${sub}</div>`:''}${d.obs?`<div class="detail-obs">${d.obs}</div>`:''}</div>
+        h+=`<div class="detail-item"><div class="detail-lbl">${it.label}${sub?`<div class="detail-obs">${sub}${expHtml}</div>`:''}${d.obs?`<div class="detail-obs">${d.obs}</div>`:''}</div>
           <span class="badge ${vc}">${vl}</span></div>`;
       });
     });
