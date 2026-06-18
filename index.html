@@ -410,51 +410,54 @@ body{
 <script>
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 DATA \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 const SEG = [
-  {id:'s1',title:'1. Administraci\u00F3n',items:[
-    {id:'s1_1',label:'Registro de veh\u00EDculos actualizado en ERP'},
-    {id:'s1_2',label:'Fichas de trabajadores al d\u00EDa'},
-    {id:'s1_3',label:'Facturaci\u00F3n y albaranes correctos'},
-    {id:'s1_4',label:'Control de pagos y cobros'},
-    {id:'s1_5',label:'Veh\u00EDculos con baja >30 d\u00EDas pendientes de descontaminar'},
-    {id:'s1_6',label:'Veh\u00EDculos pendientes de recogida >7 d\u00EDas'},
+  {id:'s1',title:'1. Gerencia',items:[
+    {id:'s1_1',label:'Registro de residuos actualizado'},
+    {id:'s1_2',label:'Gesti\u00F3n de residuos peligrosos (6 meses)'},
+    {id:'s1_3',label:'Veh\u00EDculos con baja >30 d\u00EDas pendientes de descontaminar'},
+    {id:'s1_4',label:'Separaci\u00F3n correcta por material (hierro, aluminio, cobre\u2026)'},
+    {id:'s1_5',label:'Gestor autorizado asignado'},
+    {id:'s1_6',label:'Precio del material de reciclage actualizado'},
+    {id:'s1_7',label:'Mantenimiento de maquinaria registrado (toro, cami\u00F3n\u2026)'},
   ]},
-  {id:'s2',title:'2. Desmontaje',items:[
-    {id:'s2_1',label:'Procedimiento de desmontaje correcto'},
-    {id:'s2_2',label:'Herramientas adecuadas y en buen estado'},
-    {id:'s2_3',label:'Registro de piezas obtenidas (Aprovechamiento)'},
+  {id:'s2',title:'2. Administraci\u00F3n',items:[
+    {id:'s2_1',label:'Registro de veh\u00EDculos actualizado en ERP'},
+    {id:'s2_2',label:'Fichadas de los trabajadores al d\u00EDa'},
+    {id:'s2_3',label:'Facturaci\u00F3n y albaranes correctos'},
+    {id:'s2_4',label:'Control de pagos y cobros'},
+    {id:'s2_5',label:'Veh\u00EDculos pendientes de recogida >7 d\u00EDas'},
+    {id:'s2_6',label:'Registro de salidas de residuos actualizado'},
   ]},
-  {id:'s3',title:'3. Photocall',items:[
-    {id:'s3_1',label:'Fondo neutro y limpio'},
-    {id:'s3_2',label:'Iluminaci\u00F3n adecuada'},
-    {id:'s3_3',label:'Fotos n\u00EDtidas y sin distorsi\u00F3n'},
-    {id:'s3_4',label:'\u00C1ngulo y perspectiva correctos'},
+  {id:'s3',title:'3. Descontaminaci\u00F3n',items:[
+    {id:'s3_1',label:'Extracci\u00F3n de fluidos (aceite, refrigerante, etc.)'},
+    {id:'s3_2',label:'Etiquetas de los contenedores de residuos'},
+    {id:'s3_3',label:'Test de Co2'},
+    {id:'s3_4',label:'Test de compresiones'},
+    {id:'s3_5',label:'Videos'},
+    {id:'s3_6',label:'Filtro de papel en el vaciado de aceite de los motores de coches azules'},
+    {id:'s3_7',label:'EPI del personal correcto'},
   ]},
-  {id:'s4',title:'4. Descontaminaci\u00F3n',items:[
-    {id:'s4_1',label:'Extracci\u00F3n de fluidos (aceite, refrigerante, etc.)'},
-    {id:'s4_2',label:'Gesti\u00F3n de residuos peligrosos (6 meses)'},
-    {id:'s4_3',label:'Registro de residuos actualizado'},
-    {id:'s4_4',label:'EPI del personal correcto'},
+  {id:'s4',title:'4. Photocall',items:[
+    {id:'s4_1',label:'Calidad de la limpieza de piezas'},
+    {id:'s4_2',label:'Fondo neutro y limpio'},
+    {id:'s4_3',label:'Iluminaci\u00F3n adecuada'},
+    {id:'s4_4',label:'Fotos n\u00EDtidas y sin distorsi\u00F3n'},
+    {id:'s4_5',label:'\u00C1ngulo y perspectiva correctos'},
+    {id:'s4_6',label:'Embalaje adecuado por tipo de pieza'},
+    {id:'s4_7',label:'Etiquetado correcto (ubicaci\u00F3n de la etiqueta)'},
+    {id:'s4_8',label:'Piezas revisadas antes de enviar'},
   ]},
-  {id:'s5',title:'5. Preparaci\u00F3n / Env\u00EDo Piezas',items:[
-    {id:'s5_1',label:'Embalaje adecuado por tipo de pieza'},
-    {id:'s5_2',label:'Etiquetado correcto (ubicaci\u00F3n de la etiqueta)'},
-    {id:'s5_3',label:'Piezas revisadas antes de enviar'},
+  {id:'s5',title:'5. Desmontaje',items:[
+    {id:'s5_1',label:'Registro de piezas obtenidas (Aprovechamiento)'},
+    {id:'s5_2',label:'Procedimiento de desmontaje correcto'},
+    {id:'s5_3',label:'Herramientas adecuadas y en buen estado'},
+    {id:'s5_4',label:'Zona de trabajo limpia y ordenada'},
+    {id:'s5_5',label:'EPI del personal correcto'},
   ]},
-  {id:'s6',title:'6. Materiales Reciclaje',items:[
-    {id:'s6_1',label:'Separaci\u00F3n correcta por material (hierro, aluminio, cobre\u2026)'},
-    {id:'s6_2',label:'Gestor autorizado asignado'},
-    {id:'s6_3',label:'Precio de venta actualizado'},
-  ]},
-  {id:'s7',title:'7. Orden y Limpieza',items:[
-    {id:'s7_1',label:'Campa ordenada (FIFO aplicado)'},
-    {id:'s7_2',label:'Zonas de trabajo limpias'},
-    {id:'s7_3',label:'Pasillos libres'},
-    {id:'s7_4',label:'Gesti\u00F3n visual (se\u00F1alizaci\u00F3n, zonas marcadas)'},
-    {id:'s7_5',label:'Limpieza general de las instalaciones'},
-  ]},
-  {id:'s8',title:'8. Registros Operativos',note:'Tener estos registros al d\u00EDa agiliza la memoria anual de residuos.',items:[
-    {id:'s8_1',label:'Mantenimiento de maquinaria registrado (toro, cami\u00F3n\u2026)'},
-    {id:'s8_2',label:'Registro de salidas de residuos actualizado'},
+  {id:'s6',title:'6. Orden y Limpieza General',items:[
+    {id:'s6_1',label:'Campa ordenada (FIFO aplicado)'},
+    {id:'s6_2',label:'Pasillos libres'},
+    {id:'s6_3',label:'Gesti\u00F3n visual (se\u00F1alizaci\u00F3n, zonas marcadas)'},
+    {id:'s6_4',label:'Limpieza general de las instalaciones'},
   ]},
 ];
 
